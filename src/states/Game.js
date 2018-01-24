@@ -59,7 +59,7 @@ export default class extends Phaser.State {
   }
 
   moveOtherRandom () {
-    const newAngle = this.other.body.angle + 30 * Math.random() - 15
+    const newAngle = this.other.body.angle * 180 / Math.PI + 30 * Math.random() - 15
     this.other.body.moveTo(this.otherStepSize, this.otherStepDuration, newAngle)
   }
 
@@ -71,7 +71,7 @@ export default class extends Phaser.State {
         const distance = this.game.physics.arcade.distanceBetween(this.meee, this.other, false, true)
         if (distance < 100) {
           this.meee.frame = 1
-        } else if(distance > 200) {
+        } else if (distance > 200) {
           this.meee.frame = 0
         } else {
           this.meee.frame = 2

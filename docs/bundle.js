@@ -10626,7 +10626,7 @@ var Game = function (_Phaser$Game) {
     var width = docElement.clientWidth > _config2.default.gameWidth ? _config2.default.gameWidth : docElement.clientWidth;
     var height = docElement.clientHeight > _config2.default.gameHeight ? _config2.default.gameHeight : docElement.clientHeight;
 
-    var _this = _possibleConstructorReturn(this, (Game.__proto__ || Object.getPrototypeOf(Game)).call(this, width, height, _phaser2.default.CANVAS, 'content', null));
+    var _this = _possibleConstructorReturn(this, (Game.__proto__ || Object.getPrototypeOf(Game)).call(this, width, height, _phaser2.default.WEBGL_MULTI, 'content', null));
 
     _this.state.add('Boot', _Boot2.default, false);
     _this.state.add('Splash', _Splash2.default, false);
@@ -10958,7 +10958,7 @@ var _class = function (_Phaser$State) {
   }, {
     key: 'moveOtherRandom',
     value: function moveOtherRandom() {
-      var newAngle = this.other.body.angle + 30 * Math.random() - 15;
+      var newAngle = this.other.body.angle * 180 / Math.PI + 30 * Math.random() - 15;
       this.other.body.moveTo(this.otherStepSize, this.otherStepDuration, newAngle);
     }
   }, {
