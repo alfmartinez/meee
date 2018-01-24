@@ -10596,6 +10596,10 @@ var _Splash = __webpack_require__(/*! ./states/Splash */ 338);
 
 var _Splash2 = _interopRequireDefault(_Splash);
 
+var _GameOver = __webpack_require__(/*! ./states/GameOver */ 344);
+
+var _GameOver2 = _interopRequireDefault(_GameOver);
+
 var _Game = __webpack_require__(/*! ./states/Game */ 340);
 
 var _Game2 = _interopRequireDefault(_Game);
@@ -10627,6 +10631,7 @@ var Game = function (_Phaser$Game) {
     _this.state.add('Boot', _Boot2.default, false);
     _this.state.add('Splash', _Splash2.default, false);
     _this.state.add('Game', _Game2.default, false);
+    _this.state.add('GameOver', _GameOver2.default, false);
 
     var levelData = {
       history: []
@@ -10813,7 +10818,8 @@ var _class = function (_Phaser$State) {
       //
       // load your assets
       //
-      this.load.image('meee', 'assets/images/meee.svg');
+      this.load.spritesheet('meee', 'assets/images/meee.svg', 50, 50);
+      this.load.spritesheet('other', 'assets/images/other.svg', 100, 100);
     }
   }, {
     key: 'create',
@@ -10899,13 +10905,86 @@ var _class = function (_Phaser$State) {
   }, {
     key: 'create',
     value: function create() {
+
+      this.game.physics.startSystem(_phaser2.default.Physics.ARCADE);
+
+      this.others = this.game.add.group(this.game, 'others', true, true);
+
+      this.createMeee();
+
+      var appearTween = this.game.add.tween(this.meee.scale);
+      appearTween.from({ x: 0, y: 0 }, 1000, _phaser2.default.Easing.Linear.None);
+      appearTween.onComplete.addOnce(this.enterOther, this);
+      appearTween.start();
+    }
+  }, {
+    key: 'createMeee',
+    value: function createMeee() {
       var x = this.game.world.centerX;
       var y = this.game.world.centerY;
-      var meee = this.game.add.sprite(x, y, 'meee');
-      meee.anchor.setTo(0.5);
-      var appearTween = game.add.tween(meee.scale);
-      appearTween.from({ x: 0, y: 0 }, 1000, _phaser2.default.Easing.Linear.None);
-      appearTween.start();
+      this.meee = this.game.add.sprite(x, y, 'meee');
+      this.meee.setHealth(100);
+      this.game.physics.enable(this.meee, _phaser2.default.Physics.ARCADE);
+      this.meee.body.setCircle(25);
+      this.meee.anchor.setTo(0.5);
+      this.meee.body.onCollide = new _phaser2.default.Signal();
+      this.meee.body.onCollide.add(this.interact, this);
+      this.meee.inputEnabled = true;
+      this.meee.body.immovable = true;
+      this.meee.events.onInputDown.add(function () {
+        var angle = this.game.physics.arcade.angleToPointer(this.other) * 180 / Math.PI;
+        this.other.body.moveTo(this.otherStepSize, this.otherStepDuration, angle);
+      }, this);
+    }
+  }, {
+    key: 'enterOther',
+    value: function enterOther() {
+      this.other = this.others.create(51, 51, 'other');
+      this.other.body.setCircle(50);
+      this.other.inputEnabled = true;
+
+      this.others.setAll('body.collideWorldBounds', true);
+      this.otherStepSize = 1000;
+      this.otherStepDuration = 100;
+      this.other.body.moveTo(this.otherStepSize, this.otherStepDuration, 0);
+      this.other.body.onMoveComplete.add(this.moveOtherRandom, this);
+
+      this.other.events.onInputDown.add(function () {
+        console.log('OK');
+        var angle = this.game.physics.arcade.angleToPointer(this.meee) * 180 / Math.PI;
+        this.other.body.moveFrom(this.otherStepSize, this.otherStepDuration, angle);
+      }, this);
+    }
+  }, {
+    key: 'moveOtherRandom',
+    value: function moveOtherRandom() {
+      var newAngle = this.other.body.angle + 30 * Math.random() - 15;
+      this.other.body.moveTo(this.otherStepSize, this.otherStepDuration, newAngle);
+    }
+  }, {
+    key: 'update',
+    value: function update() {
+      this.game.physics.arcade.collide(this.meee, this.others);
+
+      if (this.meee.alive) {
+        if (this.other) {
+          var distance = this.game.physics.arcade.distanceBetween(this.meee, this.other, false, true);
+          if (distance < 100) {
+            this.meee.frame = 1;
+          } else if (distance > 200) {
+            this.meee.frame = 0;
+          } else {
+            this.meee.frame = 2;
+          }
+        }
+      } else {
+        this.state.start('GameOver', true, false, this.levelData);
+      }
+    }
+  }, {
+    key: 'interact',
+    value: function interact(meee, other) {
+      this.other.body.moveFrom(this.otherStepSize, this.otherStepDuration, this.otherAngle);
     }
   }]);
 
@@ -10935,6 +11014,75 @@ exports.default = {
   gameHeight: 400,
   localStorageName: 'phaseres6webpack'
 };
+
+/***/ }),
+/* 343 */,
+/* 344 */
+/*!********************************!*\
+  !*** ./src/states/GameOver.js ***!
+  \********************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _phaser = __webpack_require__(/*! phaser */ 46);
+
+var _phaser2 = _interopRequireDefault(_phaser);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* globals __DEV__ */
+
+
+var _class = function (_Phaser$State) {
+  _inherits(_class, _Phaser$State);
+
+  function _class() {
+    _classCallCheck(this, _class);
+
+    return _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
+  }
+
+  _createClass(_class, [{
+    key: 'init',
+    value: function init(levelData) {
+      this.levelData = levelData;
+    }
+  }, {
+    key: 'preload',
+    value: function preload() {}
+  }, {
+    key: 'create',
+    value: function create() {
+      var bannerText = 'Game Over';
+      var banner = this.add.text(this.world.centerX, this.game.height - 80, bannerText, {
+        font: '40px Bangers',
+        fill: '#77BFA3',
+        smoothed: false
+      });
+
+      banner.padding.set(10, 16);
+      banner.anchor.setTo(0.5);
+    }
+  }]);
+
+  return _class;
+}(_phaser2.default.State);
+
+exports.default = _class;
 
 /***/ })
 ],[129]);
