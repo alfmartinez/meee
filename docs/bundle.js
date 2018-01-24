@@ -10899,9 +10899,13 @@ var _class = function (_Phaser$State) {
   }, {
     key: 'create',
     value: function create() {
-      var x = this.game.world.centerX - 25;
-      var y = this.game.world.centerY - 25;
-      this.game.add.sprite(x, y, 'meee');
+      var x = this.game.world.centerX;
+      var y = this.game.world.centerY;
+      var meee = this.game.add.sprite(x, y, 'meee');
+      meee.anchor.setTo(0.5);
+      var appearTween = game.add.tween(meee.scale);
+      appearTween.from({ x: 0, y: 0 }, 1000, _phaser2.default.Easing.Linear.None);
+      appearTween.start();
     }
   }]);
 
