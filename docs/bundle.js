@@ -10628,9 +10628,12 @@ var Game = function (_Phaser$Game) {
     _this.state.add('Splash', _Splash2.default, false);
     _this.state.add('Game', _Game2.default, false);
 
-    // with Cordova with need to wait that the device is ready so we will call the Boot state in another file
-    if (!window.cordova) {
-      _this.state.start('Boot');
+    var levelData = {
+      history: []
+
+      // with Cordova with need to wait that the device is ready so we will call the Boot state in another file
+    };if (!window.cordova) {
+      _this.state.start('Boot', true, false, levelData);
     }
     return _this;
   }
@@ -10712,7 +10715,8 @@ var _class = function (_Phaser$State) {
 
   _createClass(_class, [{
     key: 'init',
-    value: function init() {
+    value: function init(levelData) {
+      this.levelData = levelData;
       this.stage.backgroundColor = '#EDEEC9';
       this.fontsReady = false;
       this.fontsLoaded = this.fontsLoaded.bind(this);
@@ -10737,7 +10741,7 @@ var _class = function (_Phaser$State) {
     key: 'render',
     value: function render() {
       if (this.fontsReady) {
-        this.state.start('Splash');
+        this.state.start('Splash', true, false, this.levelData);
       }
     }
   }, {
@@ -10795,7 +10799,9 @@ var _class = function (_Phaser$State) {
 
   _createClass(_class, [{
     key: 'init',
-    value: function init() {}
+    value: function init(levelData) {
+      this.levelData = levelData;
+    }
   }, {
     key: 'preload',
     value: function preload() {
@@ -10807,12 +10813,12 @@ var _class = function (_Phaser$State) {
       //
       // load your assets
       //
-      this.load.image('mushroom', 'assets/images/mushroom2.png');
+      this.load.image('meee', 'assets/images/meee.svg');
     }
   }, {
     key: 'create',
     value: function create() {
-      this.state.start('Game');
+      this.state.start('Game', true, false, this.levelData);
     }
   }]);
 
@@ -10864,10 +10870,6 @@ var _phaser = __webpack_require__(/*! phaser */ 46);
 
 var _phaser2 = _interopRequireDefault(_phaser);
 
-var _Mushroom = __webpack_require__(/*! ../sprites/Mushroom */ 341);
-
-var _Mushroom2 = _interopRequireDefault(_Mushroom);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -10888,13 +10890,19 @@ var _class = function (_Phaser$State) {
 
   _createClass(_class, [{
     key: 'init',
-    value: function init() {}
+    value: function init(levelData) {
+      this.levelData = levelData;
+    }
   }, {
     key: 'preload',
     value: function preload() {}
   }, {
     key: 'create',
-    value: function create() {}
+    value: function create() {
+      var x = this.game.world.centerX - 25;
+      var y = this.game.world.centerY - 25;
+      this.game.add.sprite(x, y, 'meee');
+    }
   }]);
 
   return _class;
@@ -10903,65 +10911,7 @@ var _class = function (_Phaser$State) {
 exports.default = _class;
 
 /***/ }),
-/* 341 */
-/*!*********************************!*\
-  !*** ./src/sprites/Mushroom.js ***!
-  \*********************************/
-/*! dynamic exports provided */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _phaser = __webpack_require__(/*! phaser */ 46);
-
-var _phaser2 = _interopRequireDefault(_phaser);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _class = function (_Phaser$Sprite) {
-  _inherits(_class, _Phaser$Sprite);
-
-  function _class(_ref) {
-    var game = _ref.game,
-        x = _ref.x,
-        y = _ref.y,
-        asset = _ref.asset;
-
-    _classCallCheck(this, _class);
-
-    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, game, x, y, asset));
-
-    _this.anchor.setTo(0.5);
-    return _this;
-  }
-
-  _createClass(_class, [{
-    key: 'update',
-    value: function update() {
-      this.angle += 1;
-    }
-  }]);
-
-  return _class;
-}(_phaser2.default.Sprite);
-
-exports.default = _class;
-
-/***/ }),
+/* 341 */,
 /* 342 */
 /*!***********************!*\
   !*** ./src/config.js ***!
