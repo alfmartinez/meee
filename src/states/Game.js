@@ -6,7 +6,24 @@ export default class extends Phaser.State {
     this.levelData = levelData
   }
 
-  preload () {}
+  preload () {
+    this.timers = {
+      red: this.game.time.create(),
+      white: this.game.time.create(),
+      green: this.game.time.create()
+    }
+    this.timers.red.add(3000, function () {this.state.start('GameOver')}, this)
+    this.timers.red.start()
+    this.timers.red.pause()
+
+    this.timers.white.add(30000, function () {this.state.start('GameOver')}, this)
+    this.timers.white.start()
+    this.timers.white.pause()
+
+    this.timers.green.add(10000, function () {this.state.start('Next')}, this)
+    this.timers.green.start()
+    this.timers.green.pause()
+  }
 
   create () {
 
@@ -20,6 +37,7 @@ export default class extends Phaser.State {
     appearTween.from({x: 0, y: 0}, 1000, Phaser.Easing.Linear.None)
     appearTween.onComplete.addOnce(this.enterOther, this)
     appearTween.start()
+
   }
 
   createMeee () {
@@ -71,10 +89,19 @@ export default class extends Phaser.State {
         const distance = this.game.physics.arcade.distanceBetween(this.meee, this.other, false, true)
         if (distance < 100) {
           this.meee.frame = 1
+          this.timers.red.resume()
+          this.timers.green.pause()
+          this.timers.white.pause()
         } else if (distance > 200) {
           this.meee.frame = 0
+          this.timers.red.pause()
+          this.timers.green.pause()
+          this.timers.white.resume()
         } else {
           this.meee.frame = 2
+          this.timers.red.pause()
+          this.timers.green.resume()
+          this.timers.white.pause()
         }
       }
     } else {

@@ -10600,6 +10600,10 @@ var _GameOver = __webpack_require__(/*! ./states/GameOver */ 344);
 
 var _GameOver2 = _interopRequireDefault(_GameOver);
 
+var _Next = __webpack_require__(/*! ./states/Next */ 345);
+
+var _Next2 = _interopRequireDefault(_Next);
+
 var _Game = __webpack_require__(/*! ./states/Game */ 340);
 
 var _Game2 = _interopRequireDefault(_Game);
@@ -10632,6 +10636,7 @@ var Game = function (_Phaser$Game) {
     _this.state.add('Splash', _Splash2.default, false);
     _this.state.add('Game', _Game2.default, false);
     _this.state.add('GameOver', _GameOver2.default, false);
+    _this.state.add('Next', _Next2.default, false);
 
     var levelData = {
       history: []
@@ -10901,7 +10906,30 @@ var _class = function (_Phaser$State) {
     }
   }, {
     key: 'preload',
-    value: function preload() {}
+    value: function preload() {
+      this.timers = {
+        red: this.game.time.create(),
+        white: this.game.time.create(),
+        green: this.game.time.create()
+      };
+      this.timers.red.add(3000, function () {
+        this.state.start('GameOver');
+      }, this);
+      this.timers.red.start();
+      this.timers.red.pause();
+
+      this.timers.white.add(30000, function () {
+        this.state.start('GameOver');
+      }, this);
+      this.timers.white.start();
+      this.timers.white.pause();
+
+      this.timers.green.add(10000, function () {
+        this.state.start('Next');
+      }, this);
+      this.timers.green.start();
+      this.timers.green.pause();
+    }
   }, {
     key: 'create',
     value: function create() {
@@ -10971,10 +10999,19 @@ var _class = function (_Phaser$State) {
           var distance = this.game.physics.arcade.distanceBetween(this.meee, this.other, false, true);
           if (distance < 100) {
             this.meee.frame = 1;
+            this.timers.red.resume();
+            this.timers.green.pause();
+            this.timers.white.pause();
           } else if (distance > 200) {
             this.meee.frame = 0;
+            this.timers.red.pause();
+            this.timers.green.pause();
+            this.timers.white.resume();
           } else {
             this.meee.frame = 2;
+            this.timers.red.pause();
+            this.timers.green.resume();
+            this.timers.white.pause();
           }
         }
       } else {
@@ -11068,6 +11105,74 @@ var _class = function (_Phaser$State) {
     key: 'create',
     value: function create() {
       var bannerText = 'Game Over';
+      var banner = this.add.text(this.world.centerX, this.game.height - 80, bannerText, {
+        font: '40px Bangers',
+        fill: '#77BFA3',
+        smoothed: false
+      });
+
+      banner.padding.set(10, 16);
+      banner.anchor.setTo(0.5);
+    }
+  }]);
+
+  return _class;
+}(_phaser2.default.State);
+
+exports.default = _class;
+
+/***/ }),
+/* 345 */
+/*!****************************!*\
+  !*** ./src/states/Next.js ***!
+  \****************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _phaser = __webpack_require__(/*! phaser */ 46);
+
+var _phaser2 = _interopRequireDefault(_phaser);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* globals __DEV__ */
+
+
+var _class = function (_Phaser$State) {
+  _inherits(_class, _Phaser$State);
+
+  function _class() {
+    _classCallCheck(this, _class);
+
+    return _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
+  }
+
+  _createClass(_class, [{
+    key: 'init',
+    value: function init(levelData) {
+      this.levelData = levelData;
+    }
+  }, {
+    key: 'preload',
+    value: function preload() {}
+  }, {
+    key: 'create',
+    value: function create() {
+      var bannerText = 'Congratulations';
       var banner = this.add.text(this.world.centerX, this.game.height - 80, bannerText, {
         font: '40px Bangers',
         fill: '#77BFA3',
